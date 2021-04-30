@@ -1,0 +1,15 @@
+package tw.yukina.dcdos.notion.validate;
+
+import javax.validation.Constraint;
+import javax.validation.Payload;
+import java.lang.annotation.*;
+
+@Documented
+@Constraint(validatedBy = NotionTimeValidator.class)
+@Target( { ElementType.METHOD, ElementType.FIELD })
+@Retention(RetentionPolicy.RUNTIME)
+public @interface NotionTime {
+    String message() default "Invalid time format\nCorrect format: HH:mm";
+    Class<?>[] groups() default {};
+    Class<? extends Payload>[] payload() default {};
+}
