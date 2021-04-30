@@ -41,8 +41,8 @@ dependencies {
 	implementation 'com.google.code.gson:gson:2.8.6'
 	implementation 'info.picocli:picocli:4.6.1'
 	annotationProcessor 'info.picocli:picocli-codegen:4.6.1'
-	compile 'org.reflections:reflections:0.9.12'
-	compile 'commons-validator:commons-validator:1.6'
+	implementation 'org.reflections:reflections:0.9.12'
+	implementation 'commons-validator:commons-validator:1.6'
 }
 
 dependencyManagement {
