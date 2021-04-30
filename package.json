@@ -3,7 +3,7 @@
   "license": "UNLICENSED",
   "vaadin": {
     "dependencies": {
-      "lit-element": "2.4.0",
+      "lit-element": "^2.2.1",
       "@polymer/polymer": "3.2.0",
       "@webcomponents/webcomponentsjs": "^2.2.10",
       "@vaadin/vaadin-grid": "5.7.11",
@@ -43,21 +43,21 @@
     },
     "devDependencies": {
       "webpack-babel-multi-target-plugin": "2.3.3",
-      "copy-webpack-plugin": "5.1.2",
+      "copy-webpack-plugin": "5.1.1",
       "compression-webpack-plugin": "4.0.1",
       "raw-loader": "3.1.0",
       "webpack-cli": "3.3.11",
       "webpack": "4.42.0",
-      "chokidar": "^3.5.0",
+      "chokidar": "^3.4.0",
       "webpack-merge": "4.2.2",
-      "webpack-dev-server": "3.11.0",
+      "webpack-dev-server": "3.10.3",
       "ts-loader": "8.0.12",
       "typescript": "4.0.3"
     },
     "hash": "9e66f34062fdc4ca26af827e5db090012df5fc8b77d9ad5b62dc54851f10434a"
   },
   "dependencies": {
-    "lit-element": "2.4.0",
+    "lit-element": "^2.2.1",
     "@polymer/polymer": "3.2.0",
     "@webcomponents/webcomponentsjs": "^2.2.10",
     "@vaadin/vaadin-grid": "5.7.11",
@@ -97,14 +97,14 @@
   },
   "devDependencies": {
     "webpack-babel-multi-target-plugin": "2.3.3",
-    "copy-webpack-plugin": "5.1.2",
+    "copy-webpack-plugin": "5.1.1",
     "compression-webpack-plugin": "4.0.1",
     "raw-loader": "3.1.0",
     "webpack-cli": "3.3.11",
     "webpack": "4.42.0",
-    "chokidar": "^3.5.0",
+    "chokidar": "^3.4.0",
     "webpack-merge": "4.2.2",
-    "webpack-dev-server": "3.11.0",
+    "webpack-dev-server": "3.10.3",
     "ts-loader": "8.0.12",
     "typescript": "4.0.3"
   }
