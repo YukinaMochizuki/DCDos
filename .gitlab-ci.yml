@@ -10,7 +10,7 @@
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
   IMAGE_VERSION: "0.0.1"
-  CI_REGISTRY: "registry.lan.yukina.tw:5000/"
+  CI_REGISTRY: "registry.lan.yukina.tw:5000"
   CI_REGISTRY_IMAGE: "shuvi/dcdos"
 
 stages:
@@ -52,17 +52,18 @@ package:
   stage: package
   image: docker:latest
   script:
-    - echo "docker -H $DOCKER_SOCKET_PATH pull $CI_REGISTRY$CI_REGISTRY_IMAGE:latest"
-    - docker pull $CI_REGISTRY$CI_REGISTRY_IMAGE:latest || true
+    - echo -n $REGISTRY_PASSWORD | docker login -u $REGISTRY_USERNAME --password-stdin $CI_REGISTRY
+    - echo "docker -H $DOCKER_SOCKET_PATH pull $CI_REGISTRY/$CI_REGISTRY_IMAGE:latest"
+    - docker pull $CI_REGISTRY/$CI_REGISTRY_IMAGE:latest || true
     - >
       docker build
       --pull
       --build-arg VCS_REF=$CI_COMMIT_SHA
       --build-arg VCS_URL=$CI_PROJECT_URL
-      --cache-from $CI_REGISTRY$CI_REGISTRY_IMAGE:latest
-      --tag $CI_REGISTRY$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+      --cache-from $CI_REGISTRY/$CI_REGISTRY_IMAGE:latest
+      --tag $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
       .
-    - docker push $CI_REGISTRY$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker push $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
 
 Push latest:
   image: docker:latest
@@ -72,9 +73,9 @@ Push latest:
   only:
     - master
   script:
-    - docker pull $CI_REGISTRY$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-    - docker tag $CI_REGISTRY$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:latest
-    - docker push $CI_REGISTRY$CI_REGISTRY_IMAGE:latest
+    - docker pull $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker tag $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY/$CI_REGISTRY_IMAGE:latest
 
 Push tag:
   image: docker:latest
@@ -84,7 +85,7 @@ Push tag:
   only:
     - tags
   script:
-    - docker pull $CI_REGISTRY$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-    - docker tag $CI_REGISTRY$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
-    - docker push $CI_REGISTRY$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker pull $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker tag $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker push $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
 
