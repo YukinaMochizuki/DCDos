@@ -10,6 +10,16 @@ image: gradle:7-jdk11
 # isolated from any previous builds.
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  IMAGE_VERSION: "0.0.1"
+  CI_REGISTRY: "registry.lan.yukina.tw:5000/"
+  CI_REGISTRY_IMAGE: "shuvi/dcdos"
+
+stages:
+  - build
+  - test
+  - package
+  - push
+  - deploy
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
@@ -36,3 +46,41 @@ test:
     paths:
       - build
       - .gradle
+
+package:
+  stage: package
+  image: docker:latest
+  script:
+    - docker pull $CI_REGISTRY_IMAGE:latest || true
+    - >
+      docker build
+      --pull
+      --build-arg VCS_REF=$CI_COMMIT_SHA
+      --build-arg VCS_URL=$CI_PROJECT_URL
+      --cache-from $CI_REGISTRY_IMAGE:latest
+      --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+      .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+
+Push latest:
+  variables:
+    GIT_STRATEGY: none
+  stage: push
+  only:
+    - master
+  script:
+    - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY_IMAGE:latest
+
+Push tag:
+  variables:
+    GIT_STRATEGY: none
+  stage: push
+  only:
+    - tags
+  script:
+    - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+
