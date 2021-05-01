@@ -56,11 +56,11 @@ package:
   stage: package
   # image: 
   script:
-    - docker info
     - ls /
     - ls /etc
     - ls /var/run
     - echo "docker -H $DOCKER_SOCKET_PATH pull $CI_REGISTRY$CI_REGISTRY_IMAGE:latest"
+    - docker info
     - docker -H $DOCKER_SOCKET_PATH pull $CI_REGISTRY$CI_REGISTRY_IMAGE:latest || true
     - >
       docker build
