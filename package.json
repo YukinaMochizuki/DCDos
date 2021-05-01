@@ -54,7 +54,7 @@
       "ts-loader": "8.0.12",
       "typescript": "4.0.3"
     },
-    "hash": "9e66f34062fdc4ca26af827e5db090012df5fc8b77d9ad5b62dc54851f10434a"
+    "hash": "5ebc909b53c7067773fef6c1ad9c3524037ef9fd1eb01b844e1f789665cb892a"
   },
   "dependencies": {
     "lit-element": "^2.2.1",
