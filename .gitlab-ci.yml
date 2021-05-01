@@ -2,8 +2,6 @@
 # This is the Gradle build system for JVM applications
 # https://gradle.org/
 # https://github.com/gradle/gradle
-# image: gradle:7-jdk11
-image: docker:latest
 
 # Disable the Gradle daemon for Continuous Integration servers as correctness
 # is usually a priority over speed in CI environments. Using a fresh
@@ -14,10 +12,6 @@ variables:
   IMAGE_VERSION: "0.0.1"
   CI_REGISTRY: "registry.lan.yukina.tw:5000/"
   CI_REGISTRY_IMAGE: "shuvi/dcdos"
-  DOCKER_SOCKET_PATH: "/var/run/docker.sock"
-
-services:
-  - docker:dind
 
 stages:
   - build
@@ -29,20 +23,22 @@ stages:
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
-# build:
-#   stage: build
-#   script: gradle --build-cache assemble
-#   cache:
-#     key: "$CI_COMMIT_REF_NAME"
-#     policy: push
-#     paths:
-#       - build
-#       - .gradle
-#   artifacts:
-#     paths:
-#       - build/libs/*.jar
+build:
+  image: gradle:7-jdk11
+  stage: build
+  script: gradle --build-cache assemble
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+      - build
+      - .gradle
+  artifacts:
+    paths:
+      - build/libs/*.jar
 
 # test:
+#   image: gradle:7-jdk11
 #   stage: test
 #   script: gradle check
 #   cache:
@@ -54,14 +50,10 @@ before_script:
 
 package:
   stage: package
-  # image: 
+  image: docker:latest
   script:
-    - ls /
-    - ls /etc
-    - ls /var/run
     - echo "docker -H $DOCKER_SOCKET_PATH pull $CI_REGISTRY$CI_REGISTRY_IMAGE:latest"
-    - docker info
-    - docker -H $DOCKER_SOCKET_PATH pull $CI_REGISTRY$CI_REGISTRY_IMAGE:latest || true
+    - docker pull $CI_REGISTRY$CI_REGISTRY_IMAGE:latest || true
     - >
       docker build
       --pull
@@ -73,6 +65,7 @@ package:
     - docker push $CI_REGISTRY$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
 
 Push latest:
+  image: docker:latest
   variables:
     GIT_STRATEGY: none
   stage: push
@@ -84,6 +77,7 @@ Push latest:
     - docker push $CI_REGISTRY$CI_REGISTRY_IMAGE:latest
 
 Push tag:
+  image: docker:latest
   variables:
     GIT_STRATEGY: none
   stage: push
