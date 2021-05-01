@@ -15,6 +15,9 @@ variables:
   CI_REGISTRY_IMAGE: "shuvi/dcdos"
   DOCKER_SOCKET_PATH: "/var/run/docker.sock"
 
+services:
+  - docker:dind
+
 stages:
   - build
   - test
