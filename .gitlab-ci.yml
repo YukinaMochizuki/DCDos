@@ -96,9 +96,8 @@ deploy:
     - apk add openssh-client
     - mkdir -p ~/.ssh
     - echo $PRODUCTION_ID_RSA  | tr -d '\r' > ~/.ssh/id_rsa
-    - chmod 600 ~/.ssh/id_rsa
+    - chmod 644 ~/.ssh/id_rsa
     - eval "$(ssh-agent -s)"
     - ssh-add ~/.ssh/id_rsa
     - ssh-keyscan -H 'production.lan.yukina.tw' >> ~/.ssh/known_hosts
-    - chmod 600 deploy_id_rsa
-    - ssh -i "deploy_id_rea" -o StrictHostKeyChecking=no gitlab@production.lan.yukina.tw 
+    - ssh gitlab@production.lan.yukina.tw 
