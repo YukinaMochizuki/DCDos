@@ -95,5 +95,6 @@ deploy:
     - apk upgrade && apk update
     - apk add openssh-client
     - echo $PRODUCTION_ID_RSA >> deploy_id_rea
+    - chmod 600 deploy_id_rsa
     - ssh -i "deploy_id_rea" -o StrictHostKeyChecking=no gitlab@production.lan.yukina.tw 
 
