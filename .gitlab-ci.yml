@@ -94,6 +94,10 @@ deploy:
   script:
     - apk upgrade && apk update
     - apk add openssh-client
-    - echo "${SSH_PRIVATE_KEY}" | ssh-add -
+    - mkdir -p ~/.ssh
+    - echo "$PRODUCTION_ID_RSA"  | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 700 ~/.ssh/id_rsa
+    - eval "$(ssh-agent -s)"
+    - ssh-add ~/.ssh/id_rsa
     - ssh-keyscan -H 'production.lan.yukina.tw' >> ~/.ssh/known_hosts
     - ssh gitlab@production.lan.yukina.tw 
