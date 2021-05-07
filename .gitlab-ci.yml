@@ -95,7 +95,7 @@ deploy:
     - apk upgrade && apk update
     - apk add openssh-client
     - mkdir -p ~/.ssh
-    - echo $PRODUCTION_ID_RSA  | tr -d '\r' > ~/.ssh/id_rsa
+    - echo "$PRODUCTION_ID_RSA"  | tr -d '\r' > ~/.ssh/id_rsa
     - chmod 700 ~/.ssh/id_rsa
     - eval "$(ssh-agent -s)"
     - ssh-add ~/.ssh/id_rsa
