@@ -22,19 +22,19 @@ stages:
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
-build:
-  image: gradle:7-jdk11
-  stage: build
-  script: gradle --build-cache assemble
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: push
-    paths:
-      - build
-      - .gradle
-  artifacts:
-    paths:
-      - build/libs/*.jar
+# build:
+#   image: gradle:7-jdk11
+#   stage: build
+#   script: gradle --build-cache assemble
+#   cache:
+#     key: "$CI_COMMIT_REF_NAME"
+#     policy: push
+#     paths:
+#       - build
+#       - .gradle
+#   artifacts:
+#     paths:
+#       - build/libs/*.jar
 
 # test:
 #   image: gradle:7-jdk11
@@ -94,7 +94,10 @@ deploy:
   script:
     - apk upgrade && apk update
     - apk add openssh-client
-    - echo $PRODUCTION_ID_RSA >> deploy_id_rea
+    - echo $PRODUCTION_ID_RSA  | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - eval "$(ssh-agent -s)"
+    - ssh-add ~/.ssh/id_rsa
+    - ssh-keyscan -H 'production.lan.yukina.tw' >> ~/.ssh/known_hosts
     - chmod 600 deploy_id_rsa
     - ssh -i "deploy_id_rea" -o StrictHostKeyChecking=no gitlab@production.lan.yukina.tw 
-
