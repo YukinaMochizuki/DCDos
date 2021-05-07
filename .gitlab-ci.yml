@@ -89,3 +89,11 @@ Push tag:
     - docker tag $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
     - docker push $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
 
+deploy:
+  stage: deploy
+  script:
+    - apk upgrade && apk update
+    - apk add openssh-client
+    - echo $PRODUCTION_ID_RSA >> deploy_id_rea
+    - ssh -i "deploy_id_rea" -o StrictHostKeyChecking=no gitlab@production.lan.yukina.tw 
+
