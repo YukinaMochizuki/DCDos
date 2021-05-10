@@ -4,6 +4,7 @@ import com.jcraft.jsch.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,10 @@ public class APIManager {
 
     private boolean isActive;
 
-    Logger logger = LoggerFactory.getLogger(APIManager.class);
+    @Value("${telegram.permission.master}")
+    private int adminUserId;
+
+    private final Logger logger = LoggerFactory.getLogger(APIManager.class);
 
     private final ApplicationContext applicationContext;
 
@@ -47,7 +51,7 @@ public class APIManager {
 
         TelegramConfig telegramConfig = applicationContext.getBean(TelegramConfig.class);
         SendMessage sendMessage = MessageSupplier.getMarkdownFormatBuilder().
-                text("API 伺服器進入休眠模式").build();
+                text("API 伺服器進入休眠模式").chatId(String.valueOf(adminUserId)).build();
         telegramConfig.sendMessage(sendMessage);
 
         sshConnect("stop_dcdos_notion_api");
