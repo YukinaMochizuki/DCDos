@@ -7,6 +7,7 @@ import tw.yukina.dcdos.notion.entity.event.Event;
 import tw.yukina.dcdos.notion.entity.event.EventUtil;
 import tw.yukina.dcdos.notion.entity.thing.ThingUtil;
 import tw.yukina.dcdos.notion.request.EventCreator;
+import tw.yukina.dcdos.util.ReplyKeyboard;
 
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -42,7 +43,13 @@ public class ContinuousCreateEvent extends AbstractNotionCreate{
         stdout("隸屬的專案？", getOption("ReplyMarkup", ThingUtil.getProjectRelationKeyboard()));
         String projectUuid = getProjectUuid(getInput());
 
+        stdout("開始紀錄，輸入 $done 表示完成",
+                getOption("ReplyMarkup", ReplyKeyboard.oneLayerStringKeyboard(new String[]{"$done"})));
+
         while (true){
+            String input = getInput();
+            if(input.equals("$done"))break;
+
             EventCreator eventCreator = applicationContext.getBean(EventCreator.class);
             Event.EventBuilder eventBuilder = eventCreator.getEventBuilder();
 
@@ -50,7 +57,10 @@ public class ContinuousCreateEvent extends AbstractNotionCreate{
             eventBuilder.tags(eventTags);
             eventBuilder.project(projectUuid);
 
-
+            eventBuilder.title(input);
+            eventCreator.validateAndCreate();
         }
+
+        stdout("done");
     }
 }

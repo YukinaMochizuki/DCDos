@@ -1,12 +1,14 @@
 package tw.yukina.dcdos.manager.telegram;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import picocli.CommandLine;
 import tw.yukina.dcdos.command.AbstractAssistantCommand;
 import tw.yukina.dcdos.config.TelegramConfig;
+import tw.yukina.dcdos.manager.APIManager;
 import tw.yukina.dcdos.manager.SessionManager;
 import tw.yukina.dcdos.util.MessageSupplier;
 
@@ -33,6 +35,13 @@ public class TelegramManager {
     @Autowired
     @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
     private TelegramUserInfoManager telegramUserInfoManager;
+
+    @Value("${telegram.permission.master}")
+    private int adminUserId;
+
+    @Autowired
+    @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
+    private APIManager apiManager;
 
     public TelegramManager(Set<AbstractAssistantCommand> assistantCommands, TelegramPermissionManager telegramPermissionManager, SessionManager sessionManager) {
         this.assistantCommands = assistantCommands;
@@ -84,6 +93,7 @@ public class TelegramManager {
                         telegramPermissionManager.checkUser(update.getMessage().getFrom().getId(), assistantCommand)) {
 
                     telegramUserInfoManager.input(update);
+                    apiManager.active();
 
                     StringWriter out = new StringWriter();
                     PrintWriter writer = new PrintWriter(out);
@@ -112,6 +122,11 @@ public class TelegramManager {
                         .text("Command Not Found, please type /help for usage info.")
                         .build());
             }
-        }else sessionManager.input(message);
+        }else {
+            if(update.getMessage().getChatId() == adminUserId){
+                apiManager.active();
+                sessionManager.input(message);
+            }
+        }
     }
 }
