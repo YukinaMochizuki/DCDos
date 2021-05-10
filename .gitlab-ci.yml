@@ -2,7 +2,6 @@
 # This is the Gradle build system for JVM applications
 # https://gradle.org/
 # https://github.com/gradle/gradle
-image: gradle:7-jdk11
 
 # Disable the Gradle daemon for Continuous Integration servers as correctness
 # is usually a priority over speed in CI environments. Using a fresh
@@ -10,11 +9,21 @@ image: gradle:7-jdk11
 # isolated from any previous builds.
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  CI_REGISTRY: "registry.lan.yukina.tw:5000"
+  CI_REGISTRY_IMAGE: "shuvi/dcdos"
+
+stages:
+  - build
+  - test
+  - package
+  - push
+  - deploy
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
 build:
+  image: gradle:7-jdk11
   stage: build
   script: gradle --build-cache assemble
   cache:
@@ -27,12 +36,68 @@ build:
     paths:
       - build/libs/*.jar
 
-test:
-  stage: test
-  script: gradle check
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
-    paths:
-      - build
-      - .gradle
+# test:
+#   image: gradle:7-jdk11
+#   stage: test
+#   script: gradle check
+#   cache:
+#     key: "$CI_COMMIT_REF_NAME"
+#     policy: pull
+#     paths:
+#       - build
+#       - .gradle
+
+package:
+  stage: package
+  image: docker:latest
+  script:
+    - echo -n $REGISTRY_PASSWORD | docker login -u $REGISTRY_USERNAME --password-stdin $CI_REGISTRY
+    - docker pull $CI_REGISTRY/$CI_REGISTRY_IMAGE:latest || true
+    - >
+      docker build
+      --pull
+      --build-arg VCS_REF=$CI_COMMIT_SHA
+      --build-arg VCS_URL=$CI_PROJECT_URL
+      --cache-from $CI_REGISTRY/$CI_REGISTRY_IMAGE:latest
+      --tag $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+      .
+    - docker push $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+
+Push latest:
+  image: docker:latest
+  variables:
+    GIT_STRATEGY: none
+  stage: push
+  only:
+    - master
+  script:
+    - echo -n $REGISTRY_PASSWORD | docker login -u $REGISTRY_USERNAME --password-stdin $CI_REGISTRY
+    - docker pull $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker tag $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY/$CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY/$CI_REGISTRY_IMAGE:latest
+
+Push tag:
+  image: docker:latest
+  variables:
+    GIT_STRATEGY: none
+  stage: push
+  only:
+    - tags
+  script:
+    - echo -n $REGISTRY_PASSWORD | docker login -u $REGISTRY_USERNAME --password-stdin $CI_REGISTRY
+    - docker pull $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker tag $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker push $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+
+deploy:
+  stage: deploy
+  script:
+    - apk upgrade && apk update
+    - apk add openssh-client
+    - mkdir -p ~/.ssh
+    - echo "$PRODUCTION_ID_RSA"  | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 700 ~/.ssh/id_rsa
+    - eval "$(ssh-agent -s)"
+    - ssh-add ~/.ssh/id_rsa
+    - ssh-keyscan -H 'production.lan.yukina.tw' >> ~/.ssh/known_hosts
+    - ssh gitlab@production.lan.yukina.tw 
