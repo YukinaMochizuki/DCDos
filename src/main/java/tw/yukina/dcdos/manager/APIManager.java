@@ -51,7 +51,7 @@ public class APIManager {
     @Scheduled(fixedRate = 1200000)
     private void checkHibernate(){
 
-        if(LocalDateTime.now().minusHours(1).isBefore(localDateTime))return;
+        if(LocalDateTime.now().minusHours(1).isBefore(localDateTime) || !isActive)return;
 
         TelegramConfig telegramConfig = applicationContext.getBean(TelegramConfig.class);
         SendMessage sendMessage = MessageSupplier.getMarkdownFormatBuilder().
