@@ -63,6 +63,7 @@ public class APIManager {
     }
 
     private void restart(){
+        isActive = true;
         sshConnect("stop_dcdos_notion_api");
         sshConnect("start_dcdos_notion_api");
     }
