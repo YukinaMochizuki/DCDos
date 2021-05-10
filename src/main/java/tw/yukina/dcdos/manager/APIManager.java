@@ -41,6 +41,10 @@ public class APIManager {
 
         localDateTime = LocalDateTime.now();
         isActive = true;
+        TelegramConfig telegramConfig = applicationContext.getBean(TelegramConfig.class);
+        SendMessage sendMessage = MessageSupplier.getMarkdownFormatBuilder().
+                text("正在預熱 API 伺服器").chatId(String.valueOf(adminUserId)).build();
+        telegramConfig.sendMessage(sendMessage);
         sshConnect("start_dcdos_notion_api");
     }
 
