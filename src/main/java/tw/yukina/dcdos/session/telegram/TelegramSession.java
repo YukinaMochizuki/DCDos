@@ -53,8 +53,7 @@ public class TelegramSession extends AbstractSession {
                                     (String) messageWithOption.get("UUID"),
                                     telegramMessage);
 
-                    getActiveProgramExecutor().getProgramController()
-                            .getRegister().getStandardOutputs().add(telegramStandardOutput);
+                    getStandardOutputs().add(telegramStandardOutput);
                 }
             }
         }
@@ -76,7 +75,7 @@ public class TelegramSession extends AbstractSession {
     }
 
     @Override
-    public void updateStdoutPrint() {
+    public synchronized void updateStdoutPrint() {
         List<Map<String, Object>> updateStdoutList = getActiveProgramExecutor().
                 getProgramController().getRegister().getUpdateStdout();
 
@@ -85,14 +84,14 @@ public class TelegramSession extends AbstractSession {
         for(Map<String, Object> updateStdout: updateStdoutList){
             String uuid = (String) updateStdout.get("UUID");
 
-            Optional<AbstractStandardOutput> standardOutputOptional = getActiveProgramExecutor().getProgramController()
-                    .getRegister().getStandardOutputs().stream()
+            Optional<AbstractStandardOutput> standardOutputOptional = getStandardOutputs().stream()
                     .filter(abstractStandardOutput -> uuid.equals(abstractStandardOutput.getUuid()))
                     .findAny();
 
             standardOutputOptional
                     .ifPresent(abstractStandardOutput -> {
-                        abstractStandardOutput.updateMessage(updateStdout);
+                        if(!abstractStandardOutput.getMessage().equals(updateStdout.get("Message")))
+                            abstractStandardOutput.updateMessage(updateStdout);
                         updatedStdoutList.add(updateStdout);
                     });
         }

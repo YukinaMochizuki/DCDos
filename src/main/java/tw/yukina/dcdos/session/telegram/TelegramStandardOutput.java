@@ -27,6 +27,7 @@ public class TelegramStandardOutput extends AbstractStandardOutput {
                 .chatId(String.valueOf(message.getChatId()))
                 .messageId(message.getMessageId())
                 .text((String) messageWithOption.get("Message"));
+        super.setMessage((String) messageWithOption.get("Message"));
         telegramConfig.editMessage(editMessageTextBuilder.build());
     }
 
@@ -36,6 +37,7 @@ public class TelegramStandardOutput extends AbstractStandardOutput {
                 .chatId(String.valueOf(this.message.getChatId()))
                 .messageId(this.message.getMessageId())
                 .text((message));
+        super.setMessage(message);
         telegramConfig.editMessage(editMessageTextBuilder.build());
     }
 }

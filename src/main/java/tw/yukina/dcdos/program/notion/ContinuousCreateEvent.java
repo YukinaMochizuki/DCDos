@@ -9,6 +9,8 @@ import tw.yukina.dcdos.notion.entity.thing.ThingUtil;
 import tw.yukina.dcdos.notion.request.EventCreator;
 import tw.yukina.dcdos.util.ReplyKeyboard;
 
+import java.util.UUID;
+
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ContinuousCreateEvent extends AbstractNotionCreate{
@@ -58,7 +60,13 @@ public class ContinuousCreateEvent extends AbstractNotionCreate{
             eventBuilder.project(projectUuid);
 
             eventBuilder.title(input);
-            eventCreator.validateAndCreate();
+
+            String uuid = UUID.randomUUID().toString();
+            stdout(input + "\nStatus: 已接收請求", uuid);
+
+            new Thread(() -> {
+                updateStdout(input + "\nStatus: " + eventCreator.validateAndCreate(), uuid);
+            }).start();
         }
 
         stdout("done");

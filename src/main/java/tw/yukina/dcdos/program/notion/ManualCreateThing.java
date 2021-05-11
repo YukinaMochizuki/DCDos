@@ -7,6 +7,10 @@ import tw.yukina.dcdos.notion.entity.thing.Thing;
 import tw.yukina.dcdos.notion.entity.thing.ThingUtil;
 import tw.yukina.dcdos.notion.request.ThingCreator;
 
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ManualCreateThing extends AbstractNotionCreate {
@@ -39,7 +43,8 @@ public class ManualCreateThing extends AbstractNotionCreate {
         thingBuilder.status("New");
 
         stdout("好的，請說");
-        thingBuilder.title(getInput());
+        String title = getInput();
+        thingBuilder.title(title);
 
         stdout("請確認所需的 tags，輸入 $done 表示完成",
                 getOption("ReplyMarkup", ThingUtil.getTodoThingTagsKeyboard()));
@@ -50,9 +55,15 @@ public class ManualCreateThing extends AbstractNotionCreate {
         if(!deadLineInput.equals("沒有"))thingBuilder.deadLineStartDate(deadLineInput);
 
         stdout("隸屬的專案？", getOption("ReplyMarkup", ThingUtil.getProjectRelationKeyboard()));
-        thingBuilder.project(getProjectUuid(getInput()));
+        String project = getInput();
 
-        stdout("瞭解，正在處理請求...");
-        stdout(thingCreator.validateAndCreate());
+        String uuid = UUID.randomUUID().toString();
+        stdout(title + "\nStatus: 已接收請求", uuid);
+
+        new Thread(() -> {
+            thingBuilder.project(getProjectUuid(project));
+            updateStdout(title + "\nStatus: 已驗證請求", uuid);
+            updateStdout(title + "\nStatus: " + thingCreator.validateAndCreate(), uuid);
+        }).start();
     }
 }

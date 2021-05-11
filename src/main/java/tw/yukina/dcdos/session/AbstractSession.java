@@ -10,10 +10,8 @@ import tw.yukina.dcdos.manager.SessionManager;
 import tw.yukina.dcdos.program.AbstractProgramCode;
 import tw.yukina.dcdos.program.ProgramExecutor;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class AbstractSession {
 
@@ -32,7 +30,7 @@ public abstract class AbstractSession {
     private final String uuid = UUID.randomUUID().toString();
 
     @Getter
-    private final List<Map<String, Object>> updateStdout = new ArrayList<>();
+    private final List<Map<String, Object>> updateStdout = new CopyOnWriteArrayList<>();
 
     @Getter
     @Setter
@@ -43,6 +41,9 @@ public abstract class AbstractSession {
 
     @Getter
     protected final SessionManager sessionManager;
+
+    @Getter
+    protected final Set<AbstractStandardOutput> standardOutputs = new HashSet<>();
 
     @Autowired
     private ApplicationContext applicationContext;
