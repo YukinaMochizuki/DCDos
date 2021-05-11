@@ -1,10 +1,13 @@
 package tw.yukina.dcdos.config;
 
+import com.google.common.base.Strings;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import tw.yukina.dcdos.manager.telegram.TelegramManager;
@@ -12,6 +15,7 @@ import tw.yukina.dcdos.manager.telegram.TelegramManager;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -39,9 +43,18 @@ public class TelegramConfig extends TelegramLongPollingBot {
         }
     }
 
-    public void sendMessage(SendMessage message){
+    public Message sendMessage(SendMessage message){
         try {
-            execute(message); // Call method to send the message
+            return execute(message); // Call method to send the message
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void editMessage(EditMessageText editMessageText){
+        try {
+            execute(editMessageText); // Call method to send the message
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }

@@ -54,6 +54,8 @@ public abstract class AbstractSession {
 
     public abstract void stdinPut(String input);
 
+    public abstract void updateStdoutPrint();
+
     public void start(){
         while (programExecutors.size() > 0 || activeProgramExecutor != null) {
 
@@ -64,8 +66,7 @@ public abstract class AbstractSession {
 
             activeProgramExecutor.getProgramController().setProgramStatus(ProgramStatus.RUNNING);
             activeProgramExecutor.start();
-            stdoutPrint();
-            stderrPrint();
+            refresh();
 
             activeProgramExecutor = null;
         }
@@ -82,13 +83,18 @@ public abstract class AbstractSession {
         activeProgramExecutor = programExecutorBuilder(abstractProgramCode);
         activeProgramExecutor.getProgramController().setProgramStatus(ProgramStatus.RUNNING);
         activeProgramExecutor.start();
-        stdoutPrint();
-        stderrPrint();
+        refresh();
 
         activeProgramExecutor = programExecutor;
     }
 
     private ProgramExecutor programExecutorBuilder(AbstractProgramCode abstractProgramCode){
         return new ProgramExecutor(getProgramManager(), abstractProgramCode, this);
+    }
+
+    public void refresh(){
+        stdoutPrint();
+        stderrPrint();
+        updateStdoutPrint();
     }
 }

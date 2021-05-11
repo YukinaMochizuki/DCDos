@@ -65,29 +65,44 @@ public class ProgramController {
 
     public void putStdout(Map<String, Object> messageMap){
         register.getStdout().offer(messageMap);
-        if(programStatus.equals(ProgramStatus.RUNNING)){
-            abstractSession.stdoutPrint();
-            abstractSession.stderrPrint();
-        }
+        if(programStatus.equals(ProgramStatus.RUNNING))abstractSession.refresh();
     }
 
     public void putStdoutMessage(String message){
+        Map<String, Object> messageMap = new HashMap<>();
+        messageMap.put("Message", message);
+        putStdout(messageMap);
+    }
+
+    public void putStdoutMessage(String message, String uuid){
 
         Map<String, Object> messageMap = new HashMap<>();
         messageMap.put("Message", message);
+        messageMap.put("UUID", uuid);
 
-        register.getStdout().offer(messageMap);
+        putStdout(messageMap);
+    }
+
+    public void putUpdateStdout(Map<String, Object> messageMap){
+        register.getUpdateStdout().add(messageMap);
         if(programStatus.equals(ProgramStatus.RUNNING)){
-            abstractSession.stdoutPrint();
-            abstractSession.stderrPrint();
+            abstractSession.refresh();
         }
+    }
+
+    public void putUpdateStdout(String message, String uuid){
+
+        Map<String, Object> messageMap = new HashMap<>();
+        messageMap.put("Message", message);
+        messageMap.put("UUID", uuid);
+
+        putUpdateStdout(messageMap);
     }
 
     public void putStderr(String message){
         register.getStderr().offer(message);
         if(programStatus.equals(ProgramStatus.RUNNING)){
-            abstractSession.stdoutPrint();
-            abstractSession.stderrPrint();
+            abstractSession.refresh();
         }
     }
 }

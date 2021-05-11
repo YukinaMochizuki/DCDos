@@ -1,6 +1,5 @@
 package tw.yukina.dcdos.manager;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -8,7 +7,7 @@ import tw.yukina.dcdos.program.AbstractProgramCode;
 import tw.yukina.dcdos.program.ProgramExecutor;
 import tw.yukina.dcdos.program.core.Shell;
 import tw.yukina.dcdos.session.AbstractSession;
-import tw.yukina.dcdos.session.TelegramSession;
+import tw.yukina.dcdos.session.telegram.TelegramSession;
 
 @Service
 public class SessionManager {

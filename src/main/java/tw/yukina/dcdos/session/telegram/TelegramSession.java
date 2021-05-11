@@ -1,4 +1,4 @@
-package tw.yukina.dcdos.session;
+package tw.yukina.dcdos.session.telegram;
 
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
@@ -6,22 +6,19 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import tw.yukina.dcdos.config.TelegramConfig;
 import tw.yukina.dcdos.manager.ProgramManager;
 import tw.yukina.dcdos.manager.SessionManager;
+import tw.yukina.dcdos.session.AbstractSession;
+import tw.yukina.dcdos.session.AbstractStandardOutput;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-
-import static tw.yukina.dcdos.util.ReplyKeyboard.replyKeyboardMarkupBuilder;
+import java.util.*;
 
 @SuppressWarnings("unchecked")
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class TelegramSession extends AbstractSession{
+public class TelegramSession extends AbstractSession {
 
     @Setter
     private int chat_id;
@@ -47,19 +44,18 @@ public class TelegramSession extends AbstractSession{
 
                 SendMessage message = new SendMessage();
                 message.setChatId(String.valueOf(chat_id));
-                message.setText((String) messageWithOption.get("Message"));
+                TelegramSessionUtil.settingSupportMessageOptions(message, messageWithOption);
 
-                if(messageWithOption.get("ReplyMarkup") != null){
-                    List<List<String>> replyKeyboard = (List<List<String>>) messageWithOption.get("ReplyMarkup");
-                    ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+                Message telegramMessage = telegramConfig.sendMessage(message);
+                if(messageWithOption.containsKey("UUID")){
+                    TelegramStandardOutput telegramStandardOutput =
+                            new TelegramStandardOutput(telegramConfig,
+                                    (String) messageWithOption.get("UUID"),
+                                    telegramMessage);
 
-                    keyboardMarkup.setKeyboard(replyKeyboardMarkupBuilder(replyKeyboard));
-                    keyboardMarkup.setResizeKeyboard(true);
-
-                    message.setReplyMarkup(keyboardMarkup);
+                    getActiveProgramExecutor().getProgramController()
+                            .getRegister().getStandardOutputs().add(telegramStandardOutput);
                 }
-
-                telegramConfig.sendMessage(message);
             }
         }
     }
@@ -77,6 +73,31 @@ public class TelegramSession extends AbstractSession{
                 telegramConfig.sendMessage(message);
             }
         }
+    }
+
+    @Override
+    public void updateStdoutPrint() {
+        List<Map<String, Object>> updateStdoutList = getActiveProgramExecutor().
+                getProgramController().getRegister().getUpdateStdout();
+
+        List<Map<String, Object>> updatedStdoutList = new ArrayList<>();
+
+        for(Map<String, Object> updateStdout: updateStdoutList){
+            String uuid = (String) updateStdout.get("UUID");
+
+            Optional<AbstractStandardOutput> standardOutputOptional = getActiveProgramExecutor().getProgramController()
+                    .getRegister().getStandardOutputs().stream()
+                    .filter(abstractStandardOutput -> uuid.equals(abstractStandardOutput.getUuid()))
+                    .findAny();
+
+            standardOutputOptional
+                    .ifPresent(abstractStandardOutput -> {
+                        abstractStandardOutput.updateMessage(updateStdout);
+                        updatedStdoutList.add(updateStdout);
+                    });
+        }
+
+        updateStdoutList.removeAll(updatedStdoutList);
     }
 
     @Override

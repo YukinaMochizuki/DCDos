@@ -60,8 +60,20 @@ public abstract class AbstractProgramCode {
         programController.putStdoutMessage(message);
     }
 
+    protected void stdout(String message, String uuid){
+        programController.putStdoutMessage(message, uuid);
+    }
+
     protected void stderr(String message){
         programController.putStderr(message);
+    }
+
+    protected void updateStdout(Map<String, Object> messageMap){
+        programController.putUpdateStdout(messageMap);
+    }
+
+    protected void updateStdout(String message, String uuid){
+        programController.putUpdateStdout(message, uuid);
     }
 
     protected String getInput(){
