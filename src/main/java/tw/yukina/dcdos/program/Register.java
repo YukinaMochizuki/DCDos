@@ -11,7 +11,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class Register {
     private final Queue<Map<String, Object>> stdout = new ArrayDeque<>();
-    private final List<Map<String, Object>> updateStdout = new ArrayList<>();
+    private final List<Map<String, Object>> updateStdout;
     private final Set<AbstractStandardOutput> standardOutputs = new HashSet<>();
     private final Queue<String> stderr = new ArrayDeque<>();
     private final Queue<String> stdin = new ArrayDeque<>();

@@ -12,6 +12,7 @@ import tw.yukina.dcdos.program.ProgramExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public abstract class AbstractSession {
@@ -29,6 +30,9 @@ public abstract class AbstractSession {
 
     @Getter
     private final String uuid = UUID.randomUUID().toString();
+
+    @Getter
+    private final List<Map<String, Object>> updateStdout = new ArrayList<>();
 
     @Getter
     @Setter

@@ -14,7 +14,7 @@ public class ProgramExecutor {
     private final AbstractProgramCode programCode;
 
     public ProgramExecutor(ProgramManager programManager, AbstractProgramCode programCode, AbstractSession abstractSession) {
-        Register register = new Register();
+        Register register = new Register(abstractSession.getUpdateStdout());
 
         this.programCode = programCode;
         this.programController = new ProgramController(register, programManager, abstractSession, UUID.randomUUID().toString());
