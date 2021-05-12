@@ -61,8 +61,7 @@ public class ContinuousCreateEvent extends AbstractNotionCreate{
 
             eventBuilder.title(input);
 
-            String uuid = UUID.randomUUID().toString();
-            stdout(input + "\nStatus: 已接收請求", uuid);
+            String uuid = getStatusUuidAndPrint(input);
 
             new Thread(() -> {
                 updateStdout(input + "\nStatus: " + eventCreator.validateAndCreate(), uuid);

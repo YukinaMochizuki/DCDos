@@ -54,11 +54,8 @@ public class ManualCreateThing extends AbstractNotionCreate {
         String deadLineInput = getInput();
         if(!deadLineInput.equals("沒有"))thingBuilder.deadLineStartDate(deadLineInput);
 
-        stdout("隸屬的專案？", getOption("ReplyMarkup", ThingUtil.getProjectRelationKeyboard()));
-        String project = getInput();
-
-        String uuid = UUID.randomUUID().toString();
-        stdout(title + "\nStatus: 已接收請求", uuid);
+        String project = getProjectAndPrint();
+        String uuid = getStatusUuidAndPrint(title);
 
         new Thread(() -> {
             thingBuilder.project(getProjectUuid(project));

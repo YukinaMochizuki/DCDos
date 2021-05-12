@@ -8,6 +8,8 @@ import tw.yukina.dcdos.notion.entity.event.EventUtil;
 import tw.yukina.dcdos.notion.entity.thing.ThingUtil;
 import tw.yukina.dcdos.notion.request.EventCreator;
 
+import java.util.UUID;
+
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ManualCreateEvent extends AbstractNotionCreate{
@@ -38,7 +40,8 @@ public class ManualCreateEvent extends AbstractNotionCreate{
         Event.EventBuilder eventBuilder = eventCreator.getEventBuilder();
 
         stdout("好的，請說");
-        eventBuilder.title(getInput());
+        String title = getInput();
+        eventBuilder.title(title);
 
         stdout("請確認所需的 tags，輸入 $done 表示完成",
                 getOption("ReplyMarkup", EventUtil.getEventTagsKeyboard()));
@@ -48,10 +51,13 @@ public class ManualCreateEvent extends AbstractNotionCreate{
                 getOption("ReplyMarkup", EventUtil.getEventTypeKeyboard()));
         eventBuilder.type(getInput());
 
-        stdout("隸屬的專案？", getOption("ReplyMarkup", ThingUtil.getProjectRelationKeyboard()));
-        eventBuilder.project(getProjectUuid(getInput()));
+        String project = getProjectAndPrint();
+        String uuid = getStatusUuidAndPrint(title);
 
-        stdout("瞭解，正在處理請求...");
-        stdout(eventCreator.validateAndCreate());
+        new Thread(() -> {
+            eventBuilder.project(getProjectUuid(project));
+            updateStdout(title + "\nStatus: 已驗證請求", uuid);
+            updateStdout(title + "\nStatus: " + eventCreator.validateAndCreate(), uuid);
+        }).start();
     }
 }

@@ -39,7 +39,8 @@ public class ManualCreateActivity extends AbstractNotionCreate{
         thingBuilder.isEvent(true);
 
         stdout("好的，請說");
-        thingBuilder.title(getInput());
+        String title = getInput();
+        thingBuilder.title(title);
 
         stdout("請確認所需的 tags，輸入 $done 表示完成",
                 getOption("ReplyMarkup", ThingUtil.getActiveThingTagsKeyboard()));
@@ -49,10 +50,13 @@ public class ManualCreateActivity extends AbstractNotionCreate{
         String deadLineInput = getInput();
         thingBuilder.deadLineStartDate(deadLineInput);
 
-        stdout("隸屬的專案？", getOption("ReplyMarkup", ThingUtil.getProjectRelationKeyboard()));
-        thingBuilder.project(getProjectUuid(getInput()));
+        String project = getProjectAndPrint();
+        String uuid = getStatusUuidAndPrint(title);
 
-        stdout("瞭解，正在處理請求...");
-        stdout(thingCreator.validateAndCreate());
+        new Thread(() -> {
+            thingBuilder.project(getProjectUuid(project));
+            updateStdout(title + "\nStatus: 已驗證請求", uuid);
+            updateStdout(title + "\nStatus: " + thingCreator.validateAndCreate(), uuid);
+        }).start();
     }
 }
