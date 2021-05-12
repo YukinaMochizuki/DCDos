@@ -48,9 +48,11 @@ public class APIManager {
 
     @Scheduled(fixedRate = 1200000)
     private void checkHibernate(){
-
         if(localDateTime.plusHours(1).isAfter(LocalDateTime.now()) || !isActive)return;
+        hibernate();
+    }
 
+    public void hibernate(){
         TelegramConfig telegramConfig = applicationContext.getBean(TelegramConfig.class);
         SendMessage sendMessage2 = MessageSupplier.getMarkdownFormatBuilder().
                 text("API 伺服器進入休眠模式").chatId(String.valueOf(adminUserId)).build();
