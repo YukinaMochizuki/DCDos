@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import tw.yukina.dcdos.notion.entity.thing.Thing;
 import tw.yukina.dcdos.notion.entity.thing.ThingUtil;
 import tw.yukina.dcdos.notion.request.ThingCreator;
+import tw.yukina.dcdos.util.ReplyKeyboard;
 
 import java.util.List;
 import java.util.Map;
@@ -50,7 +51,8 @@ public class ManualCreateThing extends AbstractNotionCreate {
                 getOption("ReplyMarkup", ThingUtil.getTodoThingTagsKeyboard()));
         thingBuilder.tags(getTags());
 
-        stdout("有截止日期嗎？有的話請讓我知道（yyyy/MM/dd）");
+        stdout("有截止日期嗎？有的話請讓我知道（yyyy/MM/dd）",
+                getOption("ReplyMarkup", ReplyKeyboard.oneLayerStringKeyboard(new String[]{"沒有"})));
         String deadLineInput = getInput();
         if(!deadLineInput.equals("沒有"))thingBuilder.deadLineStartDate(deadLineInput);
 

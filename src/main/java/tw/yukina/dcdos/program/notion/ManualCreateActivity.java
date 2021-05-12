@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import tw.yukina.dcdos.notion.entity.thing.Thing;
 import tw.yukina.dcdos.notion.entity.thing.ThingUtil;
 import tw.yukina.dcdos.notion.request.ThingCreator;
+import tw.yukina.dcdos.util.ReplyKeyboard;
 
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -49,6 +50,14 @@ public class ManualCreateActivity extends AbstractNotionCreate{
         stdout("請告訴我活動日期（yyyy/MM/dd）");
         String deadLineInput = getInput();
         thingBuilder.deadLineStartDate(deadLineInput);
+
+        stdout("這個活動有包含時間嗎？（HH:mm）",
+                getOption("ReplyMarkup", ReplyKeyboard.oneLayerStringKeyboard(new String[]{"沒有"})));
+        String time = getInput();
+        if(!time.equals("沒有")){
+            thingBuilder.deadLineTimeEnable(true);
+            thingBuilder.deadLineStartTime(time);
+        }
 
         String project = getProjectAndPrint();
         String uuid = getStatusUuidAndPrint(title);
