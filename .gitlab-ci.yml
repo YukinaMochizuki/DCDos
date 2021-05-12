@@ -30,8 +30,8 @@ build:
     key: cache
     policy: pull-push
     paths:
-      - build
       - .gradle
+      - build
   artifacts:
     paths:
       - build/libs/*.jar
