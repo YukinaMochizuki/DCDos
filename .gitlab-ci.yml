@@ -27,8 +27,7 @@ build:
   stage: build
   script: gradle --build-cache assemble
   cache:
-    key: cache
-    policy: pull-push
+    key: build-cache
     paths:
       - .gradle
       - build
