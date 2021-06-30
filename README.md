@@ -6,6 +6,7 @@ Disk Control And Decision Operating System.
 
 ## General Information
 - Project status: **Active**, major side project
+- **Not currently recommended for use**: Before I refactored the code of the framework into Spring Boot Starter, there are many functions tailored for myself, and most of these functions **cannot** be used directly in other environments
 
 ## Table of Contents
 - [Technologies Used](#technologies-used)
@@ -14,6 +15,7 @@ Disk Control And Decision Operating System.
 - [Usage](#usage)
 - [Examples](#examples)
 - [Roadmap](#roadmap)
+- [Some implementation details](#some-implementation-details)
 
 
 ## Technologies Used
@@ -40,25 +42,51 @@ Disk Control And Decision Operating System.
 ## Features
 
 
-## Build
-### To Jar
+## Setup
+### Build
+#### To Jar
 ```Shell
 git clone https://github.com/YukinaMochizuki/DCDos.git
 ./gradlew assemble
 ```
 
-### To Dosker image
+#### To Docker image
 After `gradlew assemble`
 ```Shell
-docker build .
+docker build --tag dcdos .
+```
+
+### Configuration
+#### application.properties
+Put it in `src/main/resources`, or in `/app/config` in the container.
+
+```properties
+dcdos.debug=false
+telegram.username=Your_Bot_Username
+telegram.token=12345:ABCDEF
+telegram.permission.master=123456789
+notion.api.baseurl=http://your-dcdos-notion-api-url
+```
+
+### Deploy
+You may need to modify these commands for your own environment.
+
+#### In my case
+```Shell
+docker pull registry.lan.yukina.tw/shuvi/dcdos:latest
+docker start dcdos-notion-api
+docker run -d \
+   -v /path/DCDos/config:/app/config \
+   -v /path/DCDos/ssh:/app/ssh \
+   --link dcdos-notion-api \
+   --name dcdos registry.lan.yukina.tw/shuvi/dcdos:latest
 ```
 
 ## Usage
-### Command
-
-
 ### Program
 
+
+### Command
 
 
 ## Examples
@@ -150,7 +178,7 @@ public class ContinuousCreateEvent extends AbstractNotionCreate{
 ## Roadmap
 
 
-## Some development details
+## Some implementation details
 
 
 
