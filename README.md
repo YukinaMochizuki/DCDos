@@ -1,12 +1,18 @@
 # DCDos
 
 
+Strictly speaking, DCDos is a combination of framework and application. In the near future, I will release part of the framework separately as spring-boot-starter to make its functions easier to use.
+
 ## What is DCDos?
-Disk Control And Decision Operating System. 
+> Disk Control And Decision Operating System.
+
+When working and living, I very much hope that I can have a personal assistant to help me organize notes and to-dos. Although [Notion](https://www.notion.so) is powerful, it is still difficult to operate this complex and huge machine efficiently during meetings or busy times.
+
+DCDos will act as a controller between the brain and the notes, just like the hard disk controller processes data from the disk to the memory.
 
 ## General Information
 - Project status: **Active**, major side project
-- **Not currently recommended for use**: Before I refactored the code of the framework into Spring Boot Starter, there are many functions tailored for myself, and most of these functions **cannot** be used directly in other environments
+- **Not currently recommended for use**: Before I refactored the code of the framework into spring-boot-starter, there are many functions tailored for myself, and most of these functions **cannot** be used directly in other environments
 
 ## Table of Contents
 - [Technologies Used](#technologies-used)
@@ -40,7 +46,10 @@ Disk Control And Decision Operating System.
 - [Project Lombok](https://projectlombok.org) - Getter, Setter, ToString, AllArgsConstructor and more..
 
 ## Features
+### Portability
+[Program](#program) doesn’t know where the message it sends will go, also doesn’t know where the message it receives comes from. All operations are dependent on the abstract class [`AbstractSession`](https://github.com/YukinaMochizuki/DCDos/blob/master/src/main/java/tw/yukina/dcdos/session/AbstractSession.java).
 
+So as long as any class extends [`AbstractSession`](https://github.com/YukinaMochizuki/DCDos/blob/master/src/main/java/tw/yukina/dcdos/session/AbstractSession.java) and implements the above method, then it can assume the responsibility of message transmission like [`TelegramSession`](https://github.com/YukinaMochizuki/DCDos/blob/master/src/main/java/tw/yukina/dcdos/session/telegram/TelegramSession.java).
 
 ## Setup
 ### Build
@@ -85,7 +94,7 @@ docker run -d \
 
 ## Usage
 ### Command
-In theory, most functions of Picocli are supported. The implementation of the execution command is in the [`TelegramManager`](https://github.com/YukinaMochizuki/DCDos/blob/master/src/main/java/tw/yukina/dcdos/manager/telegram/TelegramManager.java). You can adjust according to your needs.
+In theory, most functions of [Picocli](https://picocli.info) are supported. The implementation of the execution command is in the [`TelegramManager`](https://github.com/YukinaMochizuki/DCDos/blob/master/src/main/java/tw/yukina/dcdos/manager/telegram/TelegramManager.java). You can adjust according to your needs.
 
 ```java
 @Component
@@ -128,9 +137,6 @@ import tw.yukina.dcdos.manager.telegram.TelegramUserInfoManager;
 @Component
 @Command(name = "start", description = "Say Hello")
 public class Start extends AbstractAssistantCommand implements Runnable {
-
-    @Autowired
-    private TelegramUserInfoManager telegramUserInfoManager;
 
     @Override
     public void run() {
