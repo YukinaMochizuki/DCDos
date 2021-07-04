@@ -235,6 +235,8 @@ Only need to provide the id when sending the message, and then you can use that 
 
 ## Examples
 ### Create a note using dialogue instead of commands
+[Demo](http://www.youtube.com/watch?v=wHu39y1T0r4)
+
 ```java
 package tw.yukina.dcdos.program.notion;
 
@@ -284,10 +286,11 @@ public class ManualCreateThing extends AbstractNotionCreate {
   }
 }
 ```
-[Full code](https://github.com/YukinaMochizuki/DCDos/blob/69efd01c3d/src/main/java/tw/yukina/dcdos/program/notion/ManualCreateThing.java)</br>
-[Demo](http://www.youtube.com/watch?v=wHu39y1T0r4)
+[Full code](https://github.com/YukinaMochizuki/DCDos/blob/69efd01c3d/src/main/java/tw/yukina/dcdos/program/notion/ManualCreateThing.java)
 
 ### Create multiple notes in a row
+[Demo](http://www.youtube.com/watch?v=1J8Ds4VYb4w)
+
 ```java
 package tw.yukina.dcdos.program.notion;
 
@@ -343,8 +346,7 @@ public class ContinuousCreateEvent extends AbstractNotionCreate{
   }
 }
 ```
-[Full code](https://github.com/YukinaMochizuki/DCDos/blob/69efd01c3d/src/main/java/tw/yukina/dcdos/program/notion/ContinuousCreateEvent.java)</br>
-[Demo](http://www.youtube.com/watch?v=1J8Ds4VYb4w)
+[Full code](https://github.com/YukinaMochizuki/DCDos/blob/69efd01c3d/src/main/java/tw/yukina/dcdos/program/notion/ContinuousCreateEvent.java)
 
 ## Roadmap
 
