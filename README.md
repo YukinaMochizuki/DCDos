@@ -1,5 +1,7 @@
 # DCDos
+Don't want to read so many words? Jump to [Demo](#examples).
 
+This is personal assistant with both dialogue and command interface. 
 
 Strictly speaking, DCDos is a combination of framework and application. In the near future, I will release part of the framework separately as spring-boot-starter to make its functions easier to use.
 
