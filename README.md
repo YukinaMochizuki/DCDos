@@ -79,19 +79,169 @@ docker run -d \
    -v /path/DCDos/config:/app/config \
    -v /path/DCDos/ssh:/app/ssh \
    --link dcdos-notion-api \
-   --name dcdos registry.lan.yukina.tw/shuvi/dcdos:latest
+   --name dcdos \
+   registry.lan.yukina.tw/shuvi/dcdos:latest
 ```
 
 ## Usage
-### Program
-
-
 ### Command
+In theory, most functions of Picocli are supported. The implementation of the execution command is in the [`TelegramManager`](https://github.com/YukinaMochizuki/DCDos/blob/master/src/main/java/tw/yukina/dcdos/manager/telegram/TelegramManager.java). You can adjust according to your needs.
 
+```java
+@Component
+public class TelegramManager {
+   public void messageInput(Update update){
+   
+   ...other code
+   
+   // find all of the command, assistantCommands is initialized at constructor injection
+      Optional<AbstractAssistantCommand> assistantCommandOptional =
+         assistantCommands.stream()
+         .filter(command -> parameter.get(0).equals(command.getCommandName())).findAny();
+
+   
+   ...other code
+   
+   // execute command
+      if(assistantCommandOptional.isPresent()) {
+         new CommandLine(assistantCommand).setOut(writer).setErr(writer)
+            .setCaseInsensitiveEnumValuesAllowed(true)
+            .setUsageHelpWidth(100).execute(args);
+      }
+   }
+}
+
+```
+[Full code](https://github.com/YukinaMochizuki/DCDos/blob/master/src/main/java/tw/yukina/dcdos/manager/telegram/TelegramManager.java)
+
+
+So you can simply extend [`AbstractAssistantCommand`](https://github.com/YukinaMochizuki/DCDos/blob/master/src/main/java/tw/yukina/dcdos/command/AbstractAssistantCommand.java) and implements [`Runnable`](https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html) to create a command.
+
+```java
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import picocli.CommandLine.Command;
+import tw.yukina.dcdos.command.AbstractAssistantCommand;
+import tw.yukina.dcdos.constants.Role;
+import tw.yukina.dcdos.manager.telegram.TelegramUserInfoManager;
+
+@Component
+@Command(name = "start", description = "Say Hello")
+public class Start extends AbstractAssistantCommand implements Runnable {
+
+    @Autowired
+    private TelegramUserInfoManager telegramUserInfoManager;
+
+    @Override
+    public void run() {
+        sendMessageToChatId("Your telegram user id is " + getChatId());
+        sendMessageToChatId("Hello!!");
+    }
+
+    @Override
+    public String getCommandName() {
+        return "start";
+    }
+
+    @Override
+    public Role[] getPermissions() {
+        return new Role[]{Role.GUEST};
+    }
+}
+```
+
+### Program
+Just like creating a command, you can create a program by extends [`AbstractProgramCode`](https://github.com/YukinaMochizuki/DCDos/blob/master/src/main/java/tw/yukina/dcdos/program/AbstractProgramCode.java).
+
+```java
+package tw.yukina.dcdos.program.test;
+
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import tw.yukina.dcdos.program.AbstractProgramCode;
+import tw.yukina.dcdos.util.ReplyKeyboard;
+
+@Component
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public class TestProgram extends AbstractProgramCode {
+
+    @Override
+    public String[] getKeyword() {
+        return new String[]{"測試軟體1"};
+    }
+
+    @Override
+    public String getName() {
+        return "HelloWorld";
+    }
+
+    @Override
+    public String getNamespace() {
+        return "test";
+    }
+
+    @Override
+    public String getDepiction() {
+        return null;
+    }
+
+    @Override
+    public void run() {
+        stdout("HelloWorld");
+        stdout(programController.getInput());
+        
+        stdout("ReplyMarkup", getOption("ReplyMarkup", 
+           ReplyKeyboard.oneLayerStringKeyboard(new String[]{"Key1", "Key2"})));
+           
+        stdout("HelloWorld after HelloWorld2");
+    }
+}
+```
+Notice `getInput()` is synchronous, so blocking occurs in `stdout(programController.getInput());`.
+
+<img src="https://user-images.githubusercontent.com/26710554/124372521-05d97880-dcbd-11eb-9141-0dd32c5b076f.png" alt="drawing" width="300"/>
+
+#### Edit sent message
+Only need to provide the id when sending the message, and then you can use that id to edit the message.
+
+```java
+ @Override
+ public void run() {
+     stdout("testMessage", "uuid1");
+     stdout("testMessage2", "uuid2");
+
+     try {
+         Thread.sleep(1000);
+         stdout("after");
+         updateStdout("after edit", "uuid1");
+         updateStdout("after edit2", "uuid2");
+     } catch (InterruptedException e) {
+         e.printStackTrace();
+     }
+ }
+```
+[Full code](https://github.com/YukinaMochizuki/DCDos/blob/master/src/main/java/tw/yukina/dcdos/program/test/TestEditMessage.java)
+
+<img src="https://i.imgur.com/iRsE48f.gif" alt="drawing" width="300"/>
 
 ## Examples
 ### Create a note using dialogue instead of commands
 ```java
+package tw.yukina.dcdos.program.notion;
+
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import tw.yukina.dcdos.notion.entity.thing.Thing;
+import tw.yukina.dcdos.notion.entity.thing.ThingUtil;
+import tw.yukina.dcdos.notion.request.ThingCreator;
+import tw.yukina.dcdos.util.ReplyKeyboard;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ManualCreateThing extends AbstractNotionCreate {
@@ -131,6 +281,19 @@ public class ManualCreateThing extends AbstractNotionCreate {
 
 ### Create multiple notes in a row
 ```java
+package tw.yukina.dcdos.program.notion;
+
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import tw.yukina.dcdos.notion.entity.event.Event;
+import tw.yukina.dcdos.notion.entity.event.EventUtil;
+import tw.yukina.dcdos.notion.entity.thing.ThingUtil;
+import tw.yukina.dcdos.notion.request.EventCreator;
+import tw.yukina.dcdos.util.ReplyKeyboard;
+
+import java.util.UUID;
+
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ContinuousCreateEvent extends AbstractNotionCreate{
