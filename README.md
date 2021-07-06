@@ -143,7 +143,7 @@ public class Start extends AbstractAssistantCommand implements Runnable {
     @Override
     public void run() {
         sendMessageToChatId("Your telegram user id is " + getChatId());
-        sendMessageToChatId("Hello!!");
+        sendMessageToChatId("If you want to get some help, please send /help for me");
     }
 
     @Override
@@ -157,6 +157,9 @@ public class Start extends AbstractAssistantCommand implements Runnable {
     }
 }
 ```
+
+<img src="https://user-images.githubusercontent.com/26710554/124572937-a6759700-de7b-11eb-8935-9686ebcbeb8b.png" alt="drawing" width="400"/>
+
 
 ### Program
 Just like creating a command, you can create a program by extends [`AbstractProgramCode`](https://github.com/YukinaMochizuki/DCDos/blob/master/src/main/java/tw/yukina/dcdos/program/AbstractProgramCode.java).
