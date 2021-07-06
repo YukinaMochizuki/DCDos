@@ -235,7 +235,10 @@ Only need to provide the id when sending the message, and then you can use that 
 
 ## Examples
 ### Create a note using dialogue instead of commands
-[Demo](http://www.youtube.com/watch?v=wHu39y1T0r4)
+<!-- [Demo](http://www.youtube.com/watch?v=wHu39y1T0r4) -->
+
+[![Create a note using dialogue instead of commands](https://yt-embed.herokuapp.com/embed?v=wHu39y1T0r4)](https://www.youtube.com/watch?v=wHu39y1T0r4 "Create a note using dialogue instead of commands")
+
 
 ```java
 package tw.yukina.dcdos.program.notion;
@@ -289,7 +292,10 @@ public class ManualCreateThing extends AbstractNotionCreate {
 [Full code](https://github.com/YukinaMochizuki/DCDos/blob/69efd01c3d/src/main/java/tw/yukina/dcdos/program/notion/ManualCreateThing.java)
 
 ### Create multiple notes in a row
-[Demo](http://www.youtube.com/watch?v=1J8Ds4VYb4w)
+<!-- [Demo](http://www.youtube.com/watch?v=1J8Ds4VYb4w) -->
+
+[![Create multiple notes in a row](https://yt-embed.herokuapp.com/embed?v=1J8Ds4VYb4w)](https://www.youtube.com/watch?v=1J8Ds4VYb4w "Create multiple notes in a row")
+
 
 ```java
 package tw.yukina.dcdos.program.notion;
