@@ -22,6 +22,7 @@ stages:
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
+
 build:
   image: gradle:7-jdk11
   stage: build
@@ -35,6 +36,9 @@ build:
     paths:
       - build/libs/*.jar
     expire_in: 1 week
+  except:
+    changes:
+      - "*.md"
 
 # test:
 #   image: gradle:7-jdk11
@@ -62,6 +66,9 @@ package:
       --tag $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
       .
     - docker push $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+  except:
+    changes:
+      - "*.md"
 
 Push latest:
   image: docker:latest
@@ -75,6 +82,9 @@ Push latest:
     - docker pull $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
     - docker tag $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY/$CI_REGISTRY_IMAGE:latest
     - docker push $CI_REGISTRY/$CI_REGISTRY_IMAGE:latest
+  except:
+    changes:
+      - "*.md"
 
 Push tag:
   image: docker:latest
@@ -88,6 +98,9 @@ Push tag:
     - docker pull $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
     - docker tag $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
     - docker push $CI_REGISTRY/$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+  except:
+    changes:
+      - "*.md"
 
 deploy:
   stage: deploy
@@ -101,3 +114,6 @@ deploy:
     - ssh-add ~/.ssh/id_rsa
     - ssh-keyscan -H 'production.lan.yukina.tw' >> ~/.ssh/known_hosts
     - ssh gitlab@production.lan.yukina.tw 
+  except:
+    changes:
+      - "*.md"
