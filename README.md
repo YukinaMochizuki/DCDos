@@ -221,7 +221,7 @@ Only need to provide the id when sending the message, and then you can use that 
 ### Create a note using dialogue
 <!-- [Demo](http://www.youtube.com/watch?v=wHu39y1T0r4) -->
 
-[![Create a note using dialogue instead of commands](https://yt-embed.herokuapp.com/embed?v=wHu39y1T0r4)](https://www.youtube.com/watch?v=wHu39y1T0r4 "Create a note using dialogue instead of commands")
+[Create a note using dialogue instead of commands](https://www.youtube.com/watch?v=wHu39y1T0r4 "Create a note using dialogue instead of commands")
 
 [Full code](https://github.com/YukinaMochizuki/DCDos/blob/69efd01c3d/src/main/java/tw/yukina/dcdos/program/notion/ManualCreateThing.java)
 
